@@ -1,0 +1,168 @@
+@charset "utf-8";
+
+$box-radius: 20px;
+
+$navbar-item-img-max-height: 2.618em;
+$card-content-padding: 1rem;
+$primary: #575fff;
+$modal-content-width: 800px;
+$modal-background-background-color: rgba(10,10,10,0.40);
+
+@import "../../node_modules/bulma/bulma.sass";
+@import "../../node_modules/bulma-switch/dist/css/bulma-switch.sass";
+@import "../../node_modules/bulma-pageloader/dist/css/bulma-pageloader.sass";
+@import "../../node_modules/bulma-steps-component/bulma-steps.sass";
+@import "../../node_modules/@creativebulma/bulma-tooltip/dist/bulma-tooltip.min";
+
+$shadow: 1px 0 5px #333;
+
+$appheight: calc(100vh - 3.25rem);
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: $dark;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: $light;
+    border-radius: 20px;
+    border: 3px solid $light;
+}
+
+footer {
+    min-height: 3vh;
+    padding: 0 .618em
+}
+
+.divider-right {
+    border-right: 1px solid $grey;
+}
+
+.sidebar {
+    height: 100vh;
+    display: flex;
+    background-color: $light;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    //box-shadow: $shadow;
+    position: relative;
+    z-index: 40;
+}
+
+a.sidebar-item {
+    color: $warning;
+    background-color: $dark;
+    padding: .618rem 1.2rem;
+    margin: .4rem;
+    margin-bottom: 0; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 300ms ease;
+    border-radius: 10px;
+    width: 80px;
+}
+
+a.sidebar-item:hover {
+    color: $dark;
+    background-color: $warning-light;
+    transition: all 300ms ease;
+}
+a.sidebar-item.active {
+    background-color: $warning;
+    color: $dark;
+}
+
+a.sidebar-item svg {
+    height: 30px;
+    width: auto;
+}
+
+.orders-list {
+    background: $light;
+    height: $appheight;
+    box-shadow: $shadow;
+    position: relative;
+    z-index: 29;
+}
+
+.orders-list .orders article.active {
+    border-left: 10px solid $warning;
+    background: $warning-light;
+}
+
+.orders-list .orders article.active.pending {
+    border-left: 10px solid $success;
+    background: $warning-light;
+}
+
+.orders-list .orders article {
+    border-top: 1px solid #aaa;
+}
+
+.orders-list .orders article:last-of-type {
+    border-bottom: 1px solid #aaa;
+}
+
+@keyframes pending {
+    0% { background-color: $success-light; }
+    100% { background-color: $success; }
+}
+
+.orders-list .orders article.pending {
+    animation-name: pending;
+    animation-duration: 450ms;
+    animation-timing-function: ease-in;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+.media + .media {
+    border: none;
+}
+
+.orders-list article {
+    position: relative;
+    cursor: pointer;
+    color: $dark;
+}
+
+.orders-list article:hover {
+    background: $white;
+}
+
+.orders-list .order-status {
+    position: absolute;
+    top: 0;
+}
+
+.orders-list .status-guide .tag,
+.orders-list .orders article .tag {
+    cursor: default;
+}
+.orders-list .status-guide .tag:hover {
+    opacity: .6;
+}
+
+.orders-list .status-guide {
+    position: fixed;
+    max-width: 300px;
+    bottom: 10px;
+}
+
+.order {
+    height: $appheight;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
