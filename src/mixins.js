@@ -1,3 +1,6 @@
+/* import axios from 'axios';
+import config from '../src/config'; */
+
 export const formatPrice = {
   methods: {
     formatPrice(amount) {
@@ -29,6 +32,27 @@ export const timeGreeting = {
       if (hour >= 0 && hour <= 11) return 'Bom dia';
       if (hour >= 12 && hour <= 17) return 'Boa tarde';
       if (hour >= 18 && hour <= 23) return 'Boa noite';
+    },
+  },
+};
+
+export const setOrderStatus = {
+  methods: {
+    setOrderStatus(status) {
+      return console.log(status);
+      /* let vm = this;
+      let order_id = this.order.id;
+      let formData = new FormData();
+      formData.append('status', status);
+      axios
+        .post(config.api_url + '/orders/update/' + order_id, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .finally(() => {
+          vm.$emit('updated', true);
+        }); */
     },
   },
 };

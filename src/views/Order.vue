@@ -202,16 +202,15 @@
 </template>
 
 <script>
-import axios from 'axios';
-import config from '../config';
 import { formatDate } from '@/mixins';
 import { formatPrice } from '@/mixins';
 import { timeGreeting } from '@/mixins';
+import { setOrderStatus } from '@/mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPhone } from '@mdi/js';
 
 export default {
-  mixins: [formatDate, formatPrice, timeGreeting],
+  mixins: [formatDate, formatPrice, timeGreeting, setOrderStatus],
   components: { SvgIcon },
   name: 'Order',
   props: ['order', 'place'],
@@ -233,21 +232,6 @@ export default {
         order.city
       );
     },
-    setOrderStatus(status) {
-      let vm = this;
-      let order_id = this.order.id;
-      let formData = new FormData();
-      formData.append('status', status);
-      axios
-        .post(config.api_url + '/orders/update/' + order_id, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .finally(() => {
-          vm.$emit('updated', true);
-        });
-    },
   },
   computed: {
     subtotal() {
@@ -260,13 +244,6 @@ export default {
     total() {
       const order = this.order;
       return this.subtotal + (order.fee ? order.fee : 0);
-    },
-  },
-  watch: {
-    order: function(val, oldVal) {
-      if (this.order) {
-        console.log(val, oldVal);
-      }
     },
   },
 };

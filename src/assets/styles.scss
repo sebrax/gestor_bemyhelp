@@ -115,14 +115,15 @@ a.sidebar-item svg {
 }
 
 @keyframes pending {
-    0% { background-color: $success-light; }
-    100% { background-color: $success; }
+    $color: $warning;
+    0% { background-color: $color; }
+    100% { background-color: $color + '-light'; }
 }
 
 .orders-list .orders article.pending {
     animation-name: pending;
     animation-duration: 450ms;
-    animation-timing-function: ease-in;
+    animation-timing-function: unset;
     animation-delay: 0;
     animation-direction: alternate;
     animation-iteration-count: infinite;

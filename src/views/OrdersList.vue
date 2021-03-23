@@ -20,31 +20,58 @@
             <p>{{ order.user_name + ' ' + order.user_lastname }}</p>
           </div>
 
-          <span v-if="order.status == 1" class="tag mr-2 is-black">{{
-            'Em preparo'
-          }}</span>
-          <span v-else-if="order.status == 2" class="tag mr-2 is-info">{{
-            'Aguardando retirada'
-          }}</span>
-          <span
-            v-else-if="order.status == 3"
-            class="tag mr-2"
-            :class="{
-              'is-success':
-                order.delivery_option == 2 || order.delivery_option == 3,
-              'is-warning': order.delivery_option == 1,
-            }"
-            >{{
-              order.delivery_option == 1 ? 'Saiu para entrega' : 'Concluído'
-            }}</span
-          >
-          <span v-else-if="order.status == 4" class="tag mr-2 is-success">{{
-            'Concluído'
-          }}</span>
-          <span v-else-if="order.status == 5" class="tag mr-2 is-danger">{{
-            'Cancelado'
-          }}</span>
-          <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span>
+          <div class="tags">
+            <span v-if="order.status == 1" class="tag mr-2 is-black">{{
+              'Em preparo'
+            }}</span>
+            <span v-else-if="order.status == 2" class="tag mr-2 is-info">{{
+              'Aguardando retirada'
+            }}</span>
+            <span
+              v-else-if="order.status == 3"
+              class="tag mr-2"
+              :class="{
+                'is-success':
+                  order.delivery_option == 2 || order.delivery_option == 3,
+                'is-warning': order.delivery_option == 1,
+              }"
+              >{{
+                order.delivery_option == 1 ? 'Saiu para entrega' : 'Concluído'
+              }}</span
+            >
+            <span v-else-if="order.status == 4" class="tag mr-2 is-success">{{
+              'Concluído'
+            }}</span>
+            <span v-else-if="order.status == 5" class="tag mr-2 is-danger">{{
+              'Cancelado'
+            }}</span>
+            <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span>
+          </div>
+
+          <div class="level">
+            <div class="level-item mr-2">
+              <button
+                @click="$emit('setStatus', 1)"
+                class="button is-small is-success is-rounded is-fullwidth"
+              >
+                <span class="icon is-small">
+                  <svg-icon type="mdi" :path="accept_icon" />
+                </span>
+                <span>Aceitar</span>
+              </button>
+            </div>
+            <div class="level-item">
+              <button
+                @click="$emit('set-status', 5)"
+                class="button is-small is-danger is-rounded is-fullwidth"
+              >
+                <span class="icon is-small">
+                  <svg-icon type="mdi" :path="refuse_icon" />
+                </span>
+                <span>Recusar</span>
+              </button>
+            </div>
+          </div>
         </div>
       </article>
     </div>
@@ -64,13 +91,22 @@
 
 <script>
 import { formatDate } from '@/mixins';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiCancel, mdiThumbUp } from '@mdi/js';
 
 export default {
   mixins: [formatDate],
+  components: { SvgIcon },
   name: 'OrdersList',
   props: {
     orders: Array,
     selected: String,
+  },
+  data() {
+    return {
+      accept_icon: mdiThumbUp,
+      refuse_icon: mdiCancel,
+    };
   },
 };
 </script>

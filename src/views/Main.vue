@@ -13,7 +13,8 @@
           <orders-list
             :orders="orders"
             :selected="selected_order ? selected_order.id : null"
-            v-on:set-order="selected_order = $event"
+            @set-order="selected_order = $event"
+            @set-status="status = $event"
           />
         </div>
         <div class="order-wrapper column px-0 pb-0 py-0">
@@ -30,11 +31,11 @@
 </template>
 
 <script>
+import axios from 'axios';
 import HeaderBar from '@/components/HeaderBar.vue';
 import SideBar from '@/views/SideBar.vue';
 import OrdersList from '@/views/OrdersList.vue';
 import Order from '@/views/Order.vue';
-import axios from 'axios';
 
 export default {
   components: {
@@ -51,6 +52,7 @@ export default {
       orders: [],
       selected_order: null,
       componentKey: 0,
+      status: null,
     };
   },
   created() {
