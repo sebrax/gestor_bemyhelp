@@ -32,6 +32,7 @@
 
 <script>
 import axios from 'axios';
+import config from '../config';
 import HeaderBar from '@/components/HeaderBar.vue';
 import SideBar from '@/views/SideBar.vue';
 import OrdersList from '@/views/OrdersList.vue';
@@ -80,7 +81,7 @@ export default {
     getOrders() {
       let vm = this;
       axios
-        .get('http://localhost/essencial/api/get_store_orders/' + vm.store_id)
+        .get(config.api_url + '/get_store_orders/' + vm.store_id)
         .then(response => {
           let orders = response.data;
           if (orders.length) {
@@ -88,9 +89,7 @@ export default {
             vm.orders = orders;
           }
         })
-        .finally(() => {
-          vm.componentKey += 1;
-        });
+        .finally(() => vm.componentKey += 1);
     },
   },
 };

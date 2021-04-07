@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="navbar-end">
-      <div class="navbar-item">
+      <!-- <div class="navbar-item">
         <input
           type="checkbox"
           id="store_status"
@@ -19,7 +19,7 @@
         <label for="store_status">{{
           status == 1 ? 'Loja Aberta' : 'Loja Fechada'
         }}</label>
-      </div>
+      </div> -->
     </div>
   </nav>
 </template>

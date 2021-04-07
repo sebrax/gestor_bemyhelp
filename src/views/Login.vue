@@ -134,25 +134,19 @@ export default {
       let formData = new FormData();
       formData.append('email', this.email.value);
       formData.append('password', this.password.value);
-      axios
-        .post(config.api_url + '/user/login', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then(response => {
-          let data = response.data;
-          if (data.error) {
-            vm.$refs.password.focus();
-            vm.login_fail = true;
-            return;
-          }
-          vm.uid = data.uid;
-          vm.sid = data.store.id;
-          localStorage.setItem('uid', data.uid);
-          localStorage.setItem('sid', data.store.store.id);
-          vm.$router.push('/');
-        });
+      axios.post(config.api_url + '/user/login', formData).then(response => {
+        let data = response.data;
+        if (data.error) {
+          vm.$refs.password.focus();
+          vm.login_fail = true;
+          return;
+        }
+        vm.uid = data.uid;
+        vm.sid = data.store.id;
+        localStorage.setItem('uid', data.uid);
+        localStorage.setItem('sid', data.store.store.id);
+        vm.$router.push('/');
+      });
     },
   },
 };

@@ -16,7 +16,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiReceipt, mdiLightbulb, mdiExitRun } from '@mdi/js';
+import { mdiReceipt, mdiExitRun } from '@mdi/js';
 
 export default {
   name: 'SideBar',
@@ -29,10 +29,10 @@ export default {
           title: 'Pedidos',
           icon: mdiReceipt,
         },
-        {
+/*         {
           title: 'Ajuda',
           icon: mdiLightbulb,
-        },
+        }, */
         {
           title: 'Sair',
           icon: mdiExitRun,
