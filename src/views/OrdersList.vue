@@ -7,7 +7,7 @@
       <article
         v-for="(order, index) in orders"
         class="media py-3 px-3 my-0"
-        :class="{ active: selected == order.id, pending: !order.status }"
+        :class="{ active: selected == order.id, pending: order.status == 0 }"
         :key="index"
         @click="$emit('set-order', order)"
       >
@@ -48,7 +48,7 @@
             <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span>
           </div>
 
-          <div class="level">
+          <div v-if="order.status == 0" class="level">
             <div class="level-item mr-2">
               <button
                 @click="$emit('setStatus', 1)"

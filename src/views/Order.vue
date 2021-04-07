@@ -58,7 +58,7 @@
                   <div v-else class="buttons">
                     <button
                       v-if="order.status == 1"
-                      @click="setOrderStatus(null)"
+                      @click="setOrderStatus(2)"
                       class="button is-success"
                     >
                       Pronto para Retirar
