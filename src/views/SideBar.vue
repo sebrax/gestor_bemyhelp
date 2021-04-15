@@ -29,7 +29,7 @@ export default {
           title: 'Pedidos',
           icon: mdiReceipt,
         },
-/*         {
+        /*         {
           title: 'Ajuda',
           icon: mdiLightbulb,
         }, */

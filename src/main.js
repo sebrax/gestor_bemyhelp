@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
+import Printer from './printer';
+
+Vue.use(Printer);
 
 require('./assets/styles.scss');
 require('vue2-animate/dist/vue2-animate.min.css');

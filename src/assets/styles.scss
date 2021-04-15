@@ -23,8 +23,12 @@ $appheight: calc(100vh - 3.25rem);
     scrollbar-width: thin;
 }
 
+@media (min-width: 1200px) {
+    html { height: 100vh; overflow-y: hidden; }
+}
+
 *::-webkit-scrollbar {
-    width: 12px;
+    width: 7px;
 }
 
 *::-webkit-scrollbar-track {
@@ -32,9 +36,14 @@ $appheight: calc(100vh - 3.25rem);
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: $light;
-    border-radius: 20px;
-    border: 3px solid $light;
+    background-color: $grey-light;
+    border-radius: 0px;
+    border: 2px solid $grey-light;
+}
+
+.title,
+.subtitle {
+    word-break: normal;
 }
 
 footer {
@@ -62,14 +71,14 @@ a.sidebar-item {
     color: $warning;
     background-color: $dark;
     padding: .618rem 1.2rem;
-    margin: .4rem;
-    margin-bottom: 0; 
+    margin-bottom: .1rem; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 300ms ease;
-    border-radius: 10px;
+    // margin: .4rem;
+    // border-radius: 10px;
     width: 80px;
 }
 
@@ -84,7 +93,7 @@ a.sidebar-item.active {
 }
 
 a.sidebar-item svg {
-    height: 30px;
+    height: 25px;
     width: auto;
 }
 
@@ -94,6 +103,7 @@ a.sidebar-item svg {
     box-shadow: $shadow;
     position: relative;
     z-index: 29;
+    overflow-y: scroll;
 }
 
 .orders-list .orders article.active {
@@ -115,7 +125,7 @@ a.sidebar-item svg {
 }
 
 @keyframes pending {
-    $color: $warning;
+    $color: $danger;
     0% { background-color: $color; }
     100% { background-color: $color + '-light'; }
 }
@@ -166,4 +176,5 @@ a.sidebar-item svg {
     height: $appheight;
     overflow-y: scroll;
     overflow-x: hidden;
+    font-size: .8rem;
 }

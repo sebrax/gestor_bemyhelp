@@ -1,5 +1,5 @@
 <template>
-  <div class="columns mx-0">
+  <div class="columns mx-0 is-mobile">
     <div class="column is-narrow px-0 pb-0">
       <side-bar />
     </div>
@@ -7,22 +7,21 @@
       <header-bar v-if="place" :name="place.name" :status="place.status" />
       <div class="columns px-0 my-0 mx-0">
         <div
-          v-if="orders.length"
           class="column is-one-quarter pr-0 pb-0 py-0 px-0"
         >
           <orders-list
             :orders="orders"
             :selected="selected_order ? selected_order.id : null"
-            @set-order="selected_order = $event"
+            @set-order="selectOrder($event)"
             @set-status="status = $event"
+            @updated="getOrders(), notifyOrders(false)"
           />
         </div>
         <div class="order-wrapper column px-0 pb-0 py-0">
           <order
             :order="selected_order"
             :place="place"
-            @updated="getOrders()"
-            :key="componentKey"
+            @updated="getOrders(), notifyOrders(false)"
           />
         </div>
       </div>
@@ -37,6 +36,8 @@ import HeaderBar from '@/components/HeaderBar.vue';
 import SideBar from '@/views/SideBar.vue';
 import OrdersList from '@/views/OrdersList.vue';
 import Order from '@/views/Order.vue';
+// const { ipcRenderer } = require('electron');
+// const sound = require('sound-play');
 
 export default {
   components: {
@@ -86,10 +87,35 @@ export default {
           let orders = response.data;
           if (orders.length) {
             orders.sort((a, b) => b.id - a.id);
-            vm.orders = orders;
+            for (let o = 0; o < orders.length; o++) {
+              let items = orders[o].items;
+              for (let i = 0; i < items.length; i++) {
+                if (items[i].sale_price == '0.00') {
+                  items[i].sale_price = null;
+                }
+              }
+            }
+
+            this.$set(this, 'orders', orders);
+
+            let pending = orders.some(order => !order.status);
+            if (pending) {
+              vm.notifyOrders(true);
+            }
           }
         })
-        .finally(() => vm.componentKey += 1);
+        .finally(() => (vm.componentKey += 1));
+    },
+    selectOrder(order) {
+      this.$set(this, 'selected_order', order);
+    },
+    notifyOrders() {
+      /* let play = setInterval(() => {
+        sound.play('C:\\new_order.mp3');
+      }, 3000);
+      if (!value) clearInterval(play); 
+
+      ipcRenderer.send('notification'); */
     },
   },
 };

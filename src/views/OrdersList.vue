@@ -4,10 +4,18 @@
       <h2 class="title py-4">Pedidos</h2>
     </div>
     <div class="orders">
+      <article v-if="!orders.length" class="media py-3 px-3 my-0 has-background-white">
+        <div class="media-content">
+          <div class="content">
+            <p>Seus pedidos aparecerão aqui.</p>
+          </div>
+        </div>
+      </article>
+      
       <article
         v-for="(order, index) in orders"
         class="media py-3 px-3 my-0"
-        :class="{ active: selected == order.id, pending: order.status == 0 }"
+        :class="{ active: selected == order.id, pending: !order.status }"
         :key="index"
         @click="$emit('set-order', order)"
       >
@@ -20,7 +28,7 @@
             <p>{{ order.user_name + ' ' + order.user_lastname }}</p>
           </div>
 
-          <div class="tags">
+          <div>
             <span v-if="order.status == 1" class="tag mr-2 is-black">{{
               'Em preparo'
             }}</span>
@@ -46,12 +54,13 @@
               'Cancelado'
             }}</span>
             <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span>
+          <button @click="setOrderStatus(null, order.id)" v-if="isDev" class="button is-small">limpar</button>
           </div>
 
-          <div v-if="order.status == 0" class="level">
+          <div v-if="!order.status" class="level">
             <div class="level-item mr-2">
               <button
-                @click="$emit('setStatus', 1)"
+                @click="setOrderStatus(1, order.id)"
                 class="button is-small is-success is-rounded is-fullwidth"
               >
                 <span class="icon is-small">
@@ -62,7 +71,7 @@
             </div>
             <div class="level-item">
               <button
-                @click="$emit('set-status', 5)"
+                @click="setOrderStatus(5, order.id)"
                 class="button is-small is-danger is-rounded is-fullwidth"
               >
                 <span class="icon is-small">
@@ -72,6 +81,7 @@
               </button>
             </div>
           </div>
+
         </div>
       </article>
     </div>
@@ -91,11 +101,12 @@
 
 <script>
 import { formatDate } from '@/mixins';
+import { setOrderStatus } from '../mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCancel, mdiThumbUp } from '@mdi/js';
 
 export default {
-  mixins: [formatDate],
+  mixins: [formatDate, setOrderStatus],
   components: { SvgIcon },
   name: 'OrdersList',
   props: {
@@ -106,6 +117,7 @@ export default {
     return {
       accept_icon: mdiThumbUp,
       refuse_icon: mdiCancel,
+      isDev: process.env.NODE_ENV === 'development' ? true : false,
     };
   },
 };

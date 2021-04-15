@@ -18,7 +18,7 @@
           <div class="column is-full">
             <div class="box">
               <div class="columns is-multiline is-vcentered">
-                <div class="column is-1">
+                <div class="column is-narrow">
                   <p class="title">{{ '#' + order.id }}</p>
                 </div>
                 <div class="column is-narrow">
@@ -28,9 +28,10 @@
                   <p class="is-capitalized">
                     {{ order.user_name + ' ' + order.user_lastname }}<br />
                   </p>
-                </div>
-                <div class="column is-narrow">
-                  <a class="button is-text" :href="'tel:+55' + order.user_cel">
+                  <a
+                    class="button is-small is-text"
+                    :href="'tel:+55' + order.user_cel"
+                  >
                     <span class="icon is-small">
                       <svg-icon type="mdi" :path="phoneIcon" />
                     </span>
@@ -45,12 +46,15 @@
                     class="buttons are-small"
                   >
                     <button
-                      @click="setOrderStatus(1)"
+                      @click="setOrderStatus(1, order.id)"
                       class="button is-success"
                     >
                       Aceitar
                     </button>
-                    <button @click="setOrderStatus(5)" class="button is-danger">
+                    <button
+                      @click="setOrderStatus(5, order.id)"
+                      class="button is-danger"
+                    >
                       Recusar
                     </button>
                   </div>
@@ -58,14 +62,14 @@
                   <div v-else class="buttons">
                     <button
                       v-if="order.status == 1"
-                      @click="setOrderStatus(2)"
+                      @click="setOrderStatus(2, order.id)"
                       class="button is-success"
                     >
                       Pronto para Retirar
                     </button>
                     <button
                       v-else-if="order.status == 2"
-                      @click="setOrderStatus(3)"
+                      @click="setOrderStatus(3, order.id)"
                       class="button is-success"
                     >
                       Pedido Retirado
@@ -80,9 +84,9 @@
                   </div>
                 </div>
                 <div class="column">
-                  <button class="button is-primary is-medium">
+                  <!-- <button @click="print" class="button is-primary">
                     Imprimir Pedido
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -103,9 +107,33 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in order.items" :key="index">
+                  <tr
+                    v-for="(item, index) in order.items"
+                    :key="index"
+                    class="is-size-6"
+                  >
                     <td>{{ item.quantity }}</td>
-                    <td>{{ item.title }}</td>
+                    <td>
+                      {{ item.title }}
+                      <div v-if="item.product_complements">
+                        <ul
+                          v-for="(item, index) in item.product_complements"
+                          :key="index"
+                        >
+                          <li class="is-size-7 has-text-weight-bold">
+                            {{ item.group.name }}
+                          </li>
+                          <li class="tags my-0">
+                            <span
+                              class="tag is-small is-light"
+                              v-for="(complement, c) in item.selected"
+                              :key="c"
+                              >{{ complement.name }}</span
+                            >
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
                     <td>
                       {{
                         item.sale_price
@@ -145,7 +173,7 @@
                   >
                     <p>Cliente Retira</p>
                   </div>
-                  <div v-else>{{ fullAddress(order) }}</div>
+                  <div v-else v-html="fullAddress"></div>
                   <hr />
                   <h3 class="is-size-6 has-text-weight-semibold">Pagamento:</h3>
                   <p v-if="order.payment_type == 1">
@@ -172,11 +200,13 @@
                   </tr>
                   <tr>
                     <td><b>Taxa Entrega</b></td>
-                    <td>{{ order.fee ? formatPrice(order.fee) : '-' }}</td>
+                    <td>{{ deliveryFee ? formatPrice(deliveryFee) : '-' }}</td>
                   </tr>
-                  <tr class="has-background-warning">
+                  <tr class="has-background-warning is-size-6">
                     <td><b>Total</b></td>
-                    <td>{{ formatPrice(total) }}</td>
+                    <td>
+                      <strong>{{ formatPrice(order.total) }}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -202,12 +232,21 @@
 </template>
 
 <script>
+// const escpos = require('escpos');
+// escpos.Serial = require('escpos-serialport');
 import { formatDate } from '@/mixins';
 import { formatPrice } from '@/mixins';
 import { timeGreeting } from '@/mixins';
 import { setOrderStatus } from '@/mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPhone } from '@mdi/js';
+const { ipcRenderer } = require('electron');
+
+ipcRenderer.send('getPrinterList');
+
+ipcRenderer.once('getPrinterList', (event, data) => {
+  this.printList = data;
+});
 
 export default {
   mixins: [formatDate, formatPrice, timeGreeting, setOrderStatus],
@@ -220,7 +259,15 @@ export default {
     };
   },
   methods: {
-    fullAddress(order) {
+    print() {
+      console.log('trigger start');
+      ipcRenderer.send('print', 'teste');
+      console.log('trigger end');
+    },
+  },
+  computed: {
+    fullAddress() {
+      let order = this.order;
       return (
         order.address +
         ', ' +
@@ -232,8 +279,6 @@ export default {
         order.city
       );
     },
-  },
-  computed: {
     subtotal() {
       const items = this.order.items;
       return items.reduce(
@@ -241,9 +286,13 @@ export default {
         0
       );
     },
-    total() {
-      const order = this.order;
-      return this.subtotal + (order.fee ? order.fee : 0);
+    deliveryFee() {
+      let items_total = this.subtotal;
+      let total = this.order.total;
+      let fee = total - items_total;
+      if (fee > 0) {
+        return fee;
+      } else return null;
     },
   },
 };

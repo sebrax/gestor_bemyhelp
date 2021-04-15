@@ -38,14 +38,16 @@ export const timeGreeting = {
 
 export const setOrderStatus = {
   methods: {
-    setOrderStatus(status) {
+    setOrderStatus(status, order_id) {
+      // console.log(status, order_id);
       let vm = this;
-      let order_id = this.order.id;
       let formData = new FormData();
       formData.append('status', status);
       axios
         .post(config.api_url + '/orders/update/' + order_id, formData)
-        .then(() => vm.$emit('updated', true));
+        .then(() => {
+          vm.$emit('updated', true);
+        });
     },
   },
 };
@@ -54,7 +56,7 @@ export const loginStatus = {
   data() {
     return {
       logged_out: true,
-      not_allowed: false
-    }
-  }
-}
+      not_allowed: false,
+    };
+  },
+};
