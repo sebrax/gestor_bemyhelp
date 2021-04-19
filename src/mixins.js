@@ -36,17 +36,17 @@ export const timeGreeting = {
   },
 };
 
-export const setOrderStatus = {
+export const updateOrderStatus = {
   methods: {
-    setOrderStatus(status, order_id) {
-      // console.log(status, order_id);
-      let vm = this;
+    updateOrderStatus(status, order_id) {
       let formData = new FormData();
       formData.append('status', status);
       axios
         .post(config.api_url + '/orders/update/' + order_id, formData)
         .then(() => {
-          vm.$emit('updated', true);
+          this.getOrders();
+          this.notifyOrders(false);
+          this.selected_order.status = status;
         });
     },
   },

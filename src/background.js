@@ -1,7 +1,7 @@
 'use strict';
 
-const escpos = require('escpos');
-escpos.Serial = require('escpos-serialport');
+/* const escpos = require('escpos');
+escpos.Serial = require('escpos-serialport'); */
 const { ipcMain, Notification } = require('electron');
 
 const path = require('path');
@@ -14,7 +14,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-const print = value => {
+/* const print = value => {
   setTimeout(() => {
     console.log('print start');
 
@@ -45,25 +45,16 @@ const print = value => {
 
 ipcMain.on('print', (event, value) => {
   print(value);
-});
+}); */
 
-ipcMain.on('notification', () => {
-  /* let sound = setInterval(() => {
-    const filePath = path.join(__dirname, 'chime.wav');
-    sound.play('C:\\new_order.mp3');
-    console.log('notificou')
-  }, 3000); */
-
-  const notification = {
-    title: 'Bemyhelp Essencial',
-    body: 'Novo pedido',
-  };
-  new Notification(notification).show();
-});
-
-ipcMain.on('stop_alert', () => {
-  clearInterval(alert);
-  console.log('parou');
+ipcMain.on('notification', (event, value) => {
+  if (value === true) {
+    const notification = {
+      title: 'Bemyhelp Essencial',
+      body: 'Novo pedido',
+    };
+    new Notification(notification).show();
+  }
 });
 
 // Under the main thread, listen to the getPrinterList event passed by the rendering thread through the ipcMain object
@@ -121,7 +112,7 @@ async function createWindow() {
       })
     ); */
 
-    ipcMain.on('getPrinterDefaultName', event => {
+    /* ipcMain.on('getPrinterDefaultName', event => {
       const list = win.webContents.getPrinters();
 
       let name = '';
@@ -130,7 +121,7 @@ async function createWindow() {
       }
 
       event.returnValue = name;
-    });
+    }); */
   }
 }
 
@@ -162,6 +153,10 @@ app.on('ready', async () => {
     }
   }
   createWindow();
+});
+
+process.on('exit', () => {
+  app.quit();
 });
 
 // Exit cleanly on request from parent process in development mode.

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-export const absPath = fileNameOrFolder => {
+/* export const absPath = fileNameOrFolder => {
   const path = require('path');
   return path.join(
     process.resourcesPath,
@@ -25,5 +25,5 @@ export default {
   created() {
     this.$Printer.bindIpcMessage();
   },
-};
+}; */
 </script>

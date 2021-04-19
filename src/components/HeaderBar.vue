@@ -9,17 +9,24 @@
       </div>
     </div>
     <div class="navbar-end">
-      <!-- <div class="navbar-item">
-        <input
-          type="checkbox"
-          id="store_status"
-          class="switch is-rounded"
-          :checked="status == 1"
-        />
-        <label for="store_status">{{
-          status == 1 ? 'Loja Aberta' : 'Loja Fechada'
-        }}</label>
-      </div> -->
+      <div class="navbar-item">
+        <div class="buttons are-medium">
+          <button
+            disabled
+            class="button is-small"
+            :class="{ 'is-success': status == 1 }"
+            style="opacity: 1"
+          >
+            <span>{{ status == 1 ? 'Loja aberta' : 'Loja fechada' }}</span>
+          </button>
+          <button
+            @click="$emit('update-store-status', status)"
+            class="button is-small is-text"
+          >
+            {{ status == 1 ? 'Fechar Loja' : 'Abrir Loja' }}
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 </template>

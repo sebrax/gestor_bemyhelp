@@ -46,13 +46,13 @@
                     class="buttons are-small"
                   >
                     <button
-                      @click="setOrderStatus(1, order.id)"
+                      @click="updateOrderStatus(1)"
                       class="button is-success"
                     >
                       Aceitar
                     </button>
                     <button
-                      @click="setOrderStatus(5, order.id)"
+                      @click="updateOrderStatus(5)"
                       class="button is-danger"
                     >
                       Recusar
@@ -62,14 +62,14 @@
                   <div v-else class="buttons">
                     <button
                       v-if="order.status == 1"
-                      @click="setOrderStatus(2, order.id)"
+                      @click="updateOrderStatus(2)"
                       class="button is-success"
                     >
                       Pronto para Retirar
                     </button>
                     <button
                       v-else-if="order.status == 2"
-                      @click="setOrderStatus(3, order.id)"
+                      @click="updateOrderStatus(3)"
                       class="button is-success"
                     >
                       Pedido Retirado
@@ -101,7 +101,6 @@
               <table class="table is-fullwidth">
                 <thead>
                   <tr>
-                    <th>Qtd.</th>
                     <th>Item</th>
                     <th>Preço</th>
                   </tr>
@@ -110,20 +109,22 @@
                   <tr
                     v-for="(item, index) in order.items"
                     :key="index"
-                    class="is-size-6"
+                    class="is-size-6 has-text-weight-bold"
                   >
-                    <td>{{ item.quantity }}</td>
                     <td>
-                      {{ item.title }}
+                      {{ item.quantity + 'x ' + item.title }}
                       <div v-if="item.product_complements">
                         <ul
                           v-for="(item, index) in item.product_complements"
                           :key="index"
                         >
-                          <li class="is-size-7 has-text-weight-bold">
+                          <li
+                            v-if="item.selected.length"
+                            class="is-size-7 has-text-weight-bold"
+                          >
                             {{ item.group.name }}
                           </li>
-                          <li class="tags my-0">
+                          <li v-if="item.selected.length" class="tags my-0">
                             <span
                               class="tag is-small is-light"
                               v-for="(complement, c) in item.selected"
@@ -150,7 +151,7 @@
         </div>
 
         <!-- Observations -->
-        <div class="columns">
+        <div v-if="order.observations" class="columns">
           <div class="column is-full">
             <div class="box">
               <h3 class="is-size-6 has-text-weight-semibold">Observações:</h3>
@@ -174,7 +175,7 @@
                     <p>Cliente Retira</p>
                   </div>
                   <div v-else v-html="fullAddress"></div>
-                  <hr />
+                  <hr class="my-2" />
                   <h3 class="is-size-6 has-text-weight-semibold">Pagamento:</h3>
                   <p v-if="order.payment_type == 1">
                     Pagamento na Entrega - {{ order.payment_method }}
@@ -232,24 +233,14 @@
 </template>
 
 <script>
-// const escpos = require('escpos');
-// escpos.Serial = require('escpos-serialport');
 import { formatDate } from '@/mixins';
 import { formatPrice } from '@/mixins';
 import { timeGreeting } from '@/mixins';
-import { setOrderStatus } from '@/mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPhone } from '@mdi/js';
-const { ipcRenderer } = require('electron');
-
-ipcRenderer.send('getPrinterList');
-
-ipcRenderer.once('getPrinterList', (event, data) => {
-  this.printList = data;
-});
 
 export default {
-  mixins: [formatDate, formatPrice, timeGreeting, setOrderStatus],
+  mixins: [formatDate, formatPrice, timeGreeting],
   components: { SvgIcon },
   name: 'Order',
   props: ['order', 'place'],
@@ -259,10 +250,9 @@ export default {
     };
   },
   methods: {
-    print() {
-      console.log('trigger start');
-      ipcRenderer.send('print', 'teste');
-      console.log('trigger end');
+    updateOrderStatus(status) {
+      const order_id = this.order.id;
+      this.$emit('update-order-status', status, order_id);
     },
   },
   computed: {
@@ -281,10 +271,17 @@ export default {
     },
     subtotal() {
       const items = this.order.items;
-      return items.reduce(
+      let value = 0;
+      items.forEach(item => {
+        let price =
+          (item.sale_price ? item.sale_price : item.price) * item.quantity;
+        value += price;
+      });
+      return value;
+      /* return items.reduce(
         (a, b) => +a + (b.sale_price ? +b.sale_price : b.price),
         0
-      );
+      ); */
     },
     deliveryFee() {
       let items_total = this.subtotal;

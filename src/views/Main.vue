@@ -4,24 +4,26 @@
       <side-bar />
     </div>
     <div class="column px-0 pb-0">
-      <header-bar v-if="place" :name="place.name" :status="place.status" />
+      <header-bar
+        v-if="place"
+        :name="place.name"
+        :status="place.status"
+        @update-store-status="updateStoreStatus($event)"
+      />
       <div class="columns px-0 my-0 mx-0">
-        <div
-          class="column is-one-quarter pr-0 pb-0 py-0 px-0"
-        >
+        <div class="column is-one-quarter pr-0 pb-0 py-0 px-0">
           <orders-list
             :orders="orders"
             :selected="selected_order ? selected_order.id : null"
             @set-order="selectOrder($event)"
-            @set-status="status = $event"
-            @updated="getOrders(), notifyOrders(false)"
+            @update-order-status="updateOrderStatus"
           />
         </div>
         <div class="order-wrapper column px-0 pb-0 py-0">
           <order
             :order="selected_order"
             :place="place"
-            @updated="getOrders(), notifyOrders(false)"
+            @update-order-status="updateOrderStatus"
           />
         </div>
       </div>
@@ -36,10 +38,11 @@ import HeaderBar from '@/components/HeaderBar.vue';
 import SideBar from '@/views/SideBar.vue';
 import OrdersList from '@/views/OrdersList.vue';
 import Order from '@/views/Order.vue';
-// const { ipcRenderer } = require('electron');
-// const sound = require('sound-play');
+import { updateOrderStatus } from '../mixins';
+const { ipcRenderer } = require('electron');
 
 export default {
+  mixins: [updateOrderStatus],
   components: {
     HeaderBar,
     SideBar,
@@ -103,19 +106,44 @@ export default {
               vm.notifyOrders(true);
             }
           }
-        })
-        .finally(() => (vm.componentKey += 1));
+        });
+    },
+    updateStoreStatus(status) {
+      let value;
+      if (status == 0) {
+        value = 1;
+      } else {
+        value = 0;
+      }
+      let formData = new FormData();
+      formData.append('status', value);
+
+      axios
+        .post(
+          config.api_url + '/update_store_status/' + this.store_id,
+          formData
+        )
+        .then(() => this.getPlace());
     },
     selectOrder(order) {
       this.$set(this, 'selected_order', order);
     },
-    notifyOrders() {
-      /* let play = setInterval(() => {
-        sound.play('C:\\new_order.mp3');
-      }, 3000);
-      if (!value) clearInterval(play); 
+    notifyOrders(value) {
+      let counter = 0;
+      if(value === true && counter == 0) {
+        const audio = new Audio(process.env.BASE_URL + 'new_order.mp3');
+        setInterval(() => {
+          if(counter == 7) {
+            clearInterval();
+            return;
+          } else {
+            audio.play();
+            counter += 1;
+          }
+        }, 2000);
+      }
 
-      ipcRenderer.send('notification'); */
+      ipcRenderer.send('notification', value);
     },
   },
 };

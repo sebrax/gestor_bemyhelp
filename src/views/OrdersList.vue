@@ -4,14 +4,17 @@
       <h2 class="title py-4">Pedidos</h2>
     </div>
     <div class="orders">
-      <article v-if="!orders.length" class="media py-3 px-3 my-0 has-background-white">
+      <article
+        v-if="!orders.length"
+        class="media py-3 px-3 my-0 has-background-white"
+      >
         <div class="media-content">
           <div class="content">
             <p>Seus pedidos aparecerão aqui.</p>
           </div>
         </div>
       </article>
-      
+
       <article
         v-for="(order, index) in orders"
         class="media py-3 px-3 my-0"
@@ -53,14 +56,20 @@
             <span v-else-if="order.status == 5" class="tag mr-2 is-danger">{{
               'Cancelado'
             }}</span>
-            <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span>
-          <button @click="setOrderStatus(null, order.id)" v-if="isDev" class="button is-small">limpar</button>
+            <!-- <span v-else class="tag mr-2 is-white">{{ 'Pendente' }}</span> -->
+            <button
+              @click="updateOrderStatus(null, order.id)"
+              v-if="isDev"
+              class="button is-small"
+            >
+              limpar
+            </button>
           </div>
 
-          <div v-if="!order.status" class="level">
+          <div v-if="!order.status" class="level mt-3">
             <div class="level-item mr-2">
               <button
-                @click="setOrderStatus(1, order.id)"
+                @click="updateOrderStatus(1, order.id)"
                 class="button is-small is-success is-rounded is-fullwidth"
               >
                 <span class="icon is-small">
@@ -71,7 +80,7 @@
             </div>
             <div class="level-item">
               <button
-                @click="setOrderStatus(5, order.id)"
+                @click="updateOrderStatus(5, order.id)"
                 class="button is-small is-danger is-rounded is-fullwidth"
               >
                 <span class="icon is-small">
@@ -81,32 +90,20 @@
               </button>
             </div>
           </div>
-
         </div>
       </article>
     </div>
-
-    <!-- <div class="media px-2 is-flex-direction-column status-guide">
-      <h3 class="is-size-6 mb-2">Legenda:</h3>
-      <div class="tags">
-        <span class="tag is-white">Pendente</span>
-        <span class="tag is-info">Em preparo</span>
-        <span class="tag is-warning">Saiu para entrega</span>
-        <span class="tag is-success">Concluído</span>
-        <span class="tag is-danger">Cancelado</span>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script>
 import { formatDate } from '@/mixins';
-import { setOrderStatus } from '../mixins';
+// import { updateOrderStatus } from '../mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCancel, mdiThumbUp } from '@mdi/js';
 
 export default {
-  mixins: [formatDate, setOrderStatus],
+  mixins: [formatDate],
   components: { SvgIcon },
   name: 'OrdersList',
   props: {
@@ -119,6 +116,11 @@ export default {
       refuse_icon: mdiCancel,
       isDev: process.env.NODE_ENV === 'development' ? true : false,
     };
+  },
+  methods: {
+    updateOrderStatus(status, order_id) {
+      this.$emit('update-order-status', status, order_id);
+    },
   },
 };
 </script>
