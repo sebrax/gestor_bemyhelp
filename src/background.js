@@ -1,51 +1,16 @@
 'use strict';
 
-/* const escpos = require('escpos');
-escpos.Serial = require('escpos-serialport'); */
 const { ipcMain, Notification } = require('electron');
+import { autoUpdater } from 'electron-updater';
+const log = require('electron-log');
 
 const path = require('path');
 const url = require('url');
-
-// const sound = require('sound-play');
 
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
-/* const print = value => {
-  setTimeout(() => {
-    console.log('print start');
-
-    // escpos.USB = require('escpos-usb');
-    // const device  = new escpos.USB();
-    const device = new escpos.Serial('COM2');
-    const options = { encoding: 'cp860' };
-    const printer = new escpos.Printer(device, options);
-
-    device.open(function() {
-      printer
-        .align('ct')
-        .size(1, 1)
-        .text(value)
-        .table(['Um', 'Dois', 'Três'])
-        .tableCustom([
-          { text: 'Esquerda', align: 'LEFT', width: 0.33 },
-          { text: 'Centro', align: 'CENTER', width: 0.33 },
-          { text: 'Direita', align: 'RIGHT', width: 0.33 },
-        ])
-        .cut()
-        .close();
-    });
-
-    console.log('print end');
-  }, 1000);
-};
-
-ipcMain.on('print', (event, value) => {
-  print(value);
-}); */
 
 ipcMain.on('notification', (event, value) => {
   if (value === true) {
@@ -57,13 +22,11 @@ ipcMain.on('notification', (event, value) => {
   }
 });
 
-// Under the main thread, listen to the getPrinterList event passed by the rendering thread through the ipcMain object
-/* ipcMain.on('getPrinterList', event => {
-  // the main thread gets the printers list
-  const list = win.webContents.getPrinters();
-  // sends events to the rendering thread through webContents and passes the printers list
-  win.webContents.send('getPrinterList', list);
-}); */
+
+autoUpdater.logger = log;
+autoUpdater.logger.trasports.file.level = 'info';
+log.info('App starting...');
+
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -71,7 +34,7 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 async function createWindow() {
-  // Create the browser window.
+
   const win = new BrowserWindow({
     width: 1200,
     height: 768,
@@ -81,11 +44,11 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
     },
   });
-
+  
   if (!process.env.WEBPACK_DEV_SERVER_URL) {
     win.removeMenu();
   }
-
+  
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
@@ -102,27 +65,41 @@ async function createWindow() {
         // hash: slug
       })
     );
-
-    /* win.loadURL(
-      formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file',
-        slashes: true,
-        hash: slug,
-      })
-    ); */
-
-    /* ipcMain.on('getPrinterDefaultName', event => {
-      const list = win.webContents.getPrinters();
-
-      let name = '';
-      for (let item of list) {
-        item.isDefault && (name = item.name);
-      }
-
-      event.returnValue = name;
-    }); */
   }
+  
+  const sendStatusToWindow = text => {
+    log.info(text);
+    win.webContents.send('message', text);
+  }
+
+  autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
+  });
+
+  autoUpdater.on('update-available', () => {
+    sendStatusToWindow('Update available.');
+  });
+  
+  autoUpdater.on('update-not-available', () => {
+    sendStatusToWindow('Update not available.');
+  });
+  
+  autoUpdater.on('error', () => {
+    sendStatusToWindow('Error in auto-updater.');
+  });
+  
+  autoUpdater.on('download-progress', () => {
+    sendStatusToWindow('Download progress...');
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    sendStatusToWindow('Update downloaded; will install in 5 seconds');
+
+    setTimeout(() => {
+      autoUpdater.quitAndInstall()
+    }, 5000);
+  });
+
 }
 
 // Quit when all windows are closed.
@@ -153,6 +130,7 @@ app.on('ready', async () => {
     }
   }
   createWindow();
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 process.on('exit', () => {
