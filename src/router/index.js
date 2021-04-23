@@ -1,21 +1,50 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Login from '../views/Login';
+import Main from '../views/Main';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
+    name: 'Entrar',
+    meta: {
+      title: 'Entrar',
+    },
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('sid')) {
+        router.push('inicio');
+      }
+      next();
+    },
+  },
+  {
+    path: '/inicio',
+    name: 'Início',
+    component: Main,
+    meta: {
+      title: 'Início',
+    },
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem('sid')) {
+        router.push('/');
+        localStorage.setItem('not_allowed', false);
+      }
+      next();
+    },
+  },
+];
+/* const routes = [
+  {
+    path: '/',
     name: 'Main',
     meta: {
       title: 'Início',
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ '../views/Main.vue'),
+      import('../views/Main.vue'),
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem('sid')) {
         router.push('entrar');
@@ -32,7 +61,7 @@ const routes = [
       title: 'Entrar',
     },
   },
-];
+]; */
 
 const router = new VueRouter({
   mode: process.env.IS_ELECTRON ? 'hash' : 'history',
@@ -44,6 +73,11 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.afterEach(() => localStorage.removeItem('not_allowed'));
+router.afterEach(to => {
+  localStorage.removeItem('not_allowed');
+  if (to.path != '/' && !localStorage.getItem('sid')) {
+    router.push('/');
+  }
+});
 
 export default router;

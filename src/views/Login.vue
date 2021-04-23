@@ -2,7 +2,7 @@
   <section class="login">
     <div class="columns is-multiline">
       <div
-        class="column is-half half-background"
+        class="column is-half half-background is-hidden-touch"
         :style="{
           backgroundImage:
             'url(' + require('@/assets/woman-picking-oranges-edit.jpg') + ')',
@@ -10,15 +10,15 @@
       ></div>
 
       <div
-        class="column is-half my-0 py-0 doodle-boy"
+        class="column is-half my-0 py-0 doodle"
         :style="{
           backgroundImage: 'url(' + require('@/assets/boy.svg') + ')',
         }"
       >
         <div class="columns is-multiline is-vcentered is-centered">
-          <div class="column is-half has-text-centered">
+          <div class="column is-two-thirds has-text-centered">
             <div
-              v-if="not_allowed"
+              v-if="not_allowed === true"
               class="notification is-danger is-light py-2"
             >
               Você precisa estar logado para acessar esse conteúdo.
@@ -54,11 +54,11 @@
               </div>
               <div class="field">
                 <label class="label" for="password">Senha</label>
-                <div class="control has-icons-left">
+                <div class="control has-icons-left has-icons-right">
                   <input
                     ref="password"
                     id="password"
-                    type="password"
+                    :type="password.field_type"
                     v-model="password.value"
                     class="input is-rounded is-medium"
                     :class="{ 'is-danger': login_fail }"
@@ -67,7 +67,18 @@
                   <span class="icon is-small is-left">
                     <svg-icon type="mdi" :path="password.icon" />
                   </span>
+                  <span
+                    @click.prevent="switchVisibility"
+                    class="icon is-small is-right"
+                  >
+                    <svg-icon
+                      type="mdi"
+                      :path="visibilityIcon"
+                      style="pointer-events: initial; cursor: pointer;"
+                    />
+                  </span>
                 </div>
+
                 <p v-if="login_fail" class="help is-danger">
                   Ops, seu e-mail ou senha podem estar errados, verifique por
                   favor.
@@ -102,7 +113,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiEmail, mdiKey } from '@mdi/js';
+import { mdiEmail, mdiEye, mdiEyeOff, mdiKey } from '@mdi/js';
 import config from '../config';
 import axios from 'axios';
 
@@ -121,14 +132,19 @@ export default {
       password: {
         value: null,
         icon: mdiKey,
+        field_type: 'password',
       },
-      not_allowed: false,
+      not_allowed: null,
     };
   },
   mounted() {
     if (localStorage.getItem('not_allowed')) this.not_allowed = true;
   },
   methods: {
+    switchVisibility() {
+      this.password.field_type =
+        this.password.field_type === 'password' ? 'text' : 'password';
+    },
     logUser() {
       let vm = this;
       let formData = new FormData();
@@ -145,8 +161,13 @@ export default {
         vm.sid = data.store.id;
         localStorage.setItem('uid', data.uid);
         localStorage.setItem('sid', data.store.store.id);
-        vm.$router.push('/');
+        vm.$router.push('/inicio');
       });
+    },
+  },
+  computed: {
+    visibilityIcon() {
+      return this.password.field_type == 'password' ? mdiEye : mdiEyeOff;
     },
   },
 };
@@ -164,9 +185,9 @@ export default {
   background-repeat: no-repeat;
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.7618);
 }
-.doodle-boy {
+.doodle {
   background-repeat: no-repeat;
   background-position: bottom right;
-  background-size: calc(100vw / 7) auto;
+  background-size: calc(100vw / 8) auto;
 }
 </style>

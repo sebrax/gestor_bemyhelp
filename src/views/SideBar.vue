@@ -45,7 +45,7 @@ export default {
       if (this.active === 'Sair') {
         localStorage.removeItem('sid');
         localStorage.removeItem('uid');
-        this.$router.push('entrar');
+        this.$router.push('/');
       }
     },
   },

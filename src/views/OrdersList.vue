@@ -7,10 +7,14 @@
       <article
         v-if="!orders.length"
         class="media py-3 px-3 my-0 has-background-white"
+        style="cursor: default"
       >
         <div class="media-content">
-          <div class="content">
-            <p>Seus pedidos aparecerão aqui.</p>
+          <div class="has-text-centered has-text-grey">
+            <div class="icon is-large">
+              <svg-icon type="mdi" :size="40" :path="notifications_icon" />
+            </div>
+            <p>Tudo calmo por aqui. Seus pedidos aparecerão aqui.</p>
           </div>
         </div>
       </article>
@@ -100,7 +104,7 @@
 import { formatDate } from '@/mixins';
 // import { updateOrderStatus } from '../mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCancel, mdiThumbUp } from '@mdi/js';
+import { mdiBellSleep, mdiCancel, mdiThumbUp } from '@mdi/js';
 
 export default {
   mixins: [formatDate],
@@ -114,6 +118,7 @@ export default {
     return {
       accept_icon: mdiThumbUp,
       refuse_icon: mdiCancel,
+      notifications_icon: mdiBellSleep,
       isDev: process.env.NODE_ENV === 'development' ? true : false,
     };
   },

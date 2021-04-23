@@ -75,7 +75,7 @@ export default {
     getPlace() {
       let vm = this;
       axios
-        .get('http://localhost/essencial/api/get_store/' + vm.store_id)
+        .get(config.api_url + '/get_store/' + vm.store_id)
         .then(response => (vm.place = response.data))
         .finally(() => {
           vm.loading = false;
@@ -130,10 +130,10 @@ export default {
     },
     notifyOrders(value) {
       let counter = 0;
-      if(value === true && counter == 0) {
+      if (value === true && counter == 0) {
         const audio = new Audio(process.env.BASE_URL + 'new_order.mp3');
         setInterval(() => {
-          if(counter == 7) {
+          if (counter == 7) {
             clearInterval();
             return;
           } else {

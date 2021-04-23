@@ -2,7 +2,7 @@
 
 const { ipcMain, Notification } = require('electron');
 import { autoUpdater } from 'electron-updater';
-const log = require('electron-log');
+// const log = require('electron-log');
 
 const path = require('path');
 const url = require('url');
@@ -22,19 +22,12 @@ ipcMain.on('notification', (event, value) => {
   }
 });
 
-
-autoUpdater.logger = log;
-autoUpdater.logger.trasports.file.level = 'info';
-log.info('App starting...');
-
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
 
 async function createWindow() {
-
   const win = new BrowserWindow({
     width: 1200,
     height: 768,
@@ -44,19 +37,19 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
     },
   });
-  
-  if (!process.env.WEBPACK_DEV_SERVER_URL) {
+
+  /* if (!process.env.WEBPACK_DEV_SERVER_URL) {
     win.removeMenu();
-  }
-  
+  } */
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
     if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol('app');
-    // Load the index.html when not in development
 
+    // Load the index.html when not in development
     win.loadURL(
       url.format({
         pathname: path.join(__dirname, 'index.html'),
@@ -65,41 +58,8 @@ async function createWindow() {
         // hash: slug
       })
     );
+    autoUpdater.checkForUpdatesAndNotify();
   }
-  
-  const sendStatusToWindow = text => {
-    log.info(text);
-    win.webContents.send('message', text);
-  }
-
-  autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-  });
-
-  autoUpdater.on('update-available', () => {
-    sendStatusToWindow('Update available.');
-  });
-  
-  autoUpdater.on('update-not-available', () => {
-    sendStatusToWindow('Update not available.');
-  });
-  
-  autoUpdater.on('error', () => {
-    sendStatusToWindow('Error in auto-updater.');
-  });
-  
-  autoUpdater.on('download-progress', () => {
-    sendStatusToWindow('Download progress...');
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    sendStatusToWindow('Update downloaded; will install in 5 seconds');
-
-    setTimeout(() => {
-      autoUpdater.quitAndInstall()
-    }, 5000);
-  });
-
 }
 
 // Quit when all windows are closed.
@@ -130,7 +90,6 @@ app.on('ready', async () => {
     }
   }
   createWindow();
-  autoUpdater.checkForUpdatesAndNotify();
 });
 
 process.on('exit', () => {

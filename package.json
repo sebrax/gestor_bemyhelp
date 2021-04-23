@@ -1,15 +1,16 @@
 {
   "name": "bemyhelp_local",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "author": {
-    "name": "Bemyhelp"
+    "name": "Bemyhelp Dev"
   },
   "scripts": {
     "serve": "SET NODE_ENV=development& vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
+    "ship": "vue-cli-service electron:build -p always",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"

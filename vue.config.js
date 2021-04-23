@@ -8,9 +8,10 @@ module.exports = {
         productName: 'Gestor de Pedidos Bemyhelp Essencial',
         artifactName: 'Setup_Gestor_Bemyhelp.${ext}',
         appId: 'com.bemyhelp.app',
+        copyright: '2021 ${author}',
         win: {
           icon: 'build/icon.png',
-          publisherName: 'Bemyhelp',
+          // publisherName: 'Bemyhelp',
           target: [
             {
               target: 'nsis',
