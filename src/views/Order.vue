@@ -65,21 +65,29 @@
                       @click="updateOrderStatus(2)"
                       class="button is-success"
                     >
-                      Pronto para Retirar
+                      Despachar pedido
                     </button>
                     <button
                       v-else-if="order.status == 2"
                       @click="updateOrderStatus(3)"
                       class="button is-success"
                     >
-                      Pedido Retirado
+                      {{
+                        order.delivery_option == 1
+                          ? 'Entregador retirou'
+                          : 'Cliente retirou'
+                      }}
                     </button>
                     <button
                       v-else-if="order.status == 3"
+                      @click="updateOrderStatus(4)"
                       class="button"
-                      disabled
+                      :class="{ 'is-success': order.delivery_option == 1 }"
+                      :disabled="order.delivery_option == 2"
                     >
-                      Concluído
+                      {{
+                        order.delivery_option == 1 ? 'Concluir' : 'Concluído'
+                      }}
                     </button>
                   </div>
                 </div>
@@ -219,7 +227,7 @@
         <div class="columns is-multiline">
           <div class="column is-full box px-6 py-6">
             <h1 class="title">
-              {{ timeGreeting + ', ' + place.owner.name + '!' }}
+              {{ greeting }}
             </h1>
             <h2 class="subtitle">
               Você ainda não recebeu pedidos. Quando começarem a chegar, irão
@@ -235,12 +243,12 @@
 <script>
 import { formatDate } from '@/mixins';
 import { formatPrice } from '@/mixins';
-import { timeGreeting } from '@/mixins';
+import { greeting } from '@/mixins';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPhone } from '@mdi/js';
 
 export default {
-  mixins: [formatDate, formatPrice, timeGreeting],
+  mixins: [formatDate, formatPrice, greeting],
   components: { SvgIcon },
   name: 'Order',
   props: ['order', 'place'],

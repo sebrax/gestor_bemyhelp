@@ -36,12 +36,12 @@
           </div>
 
           <div>
-            <span v-if="order.status == 1" class="tag mr-2 is-black">{{
-              'Em preparo'
-            }}</span>
-            <span v-else-if="order.status == 2" class="tag mr-2 is-info">{{
-              'Aguardando retirada'
-            }}</span>
+            <span v-if="order.status == 1" class="tag mr-2 is-black"
+              >Em preparo</span
+            >
+            <span v-else-if="order.status == 2" class="tag mr-2 is-info"
+              >Aguardando retirada</span
+            >
             <span
               v-else-if="order.status == 3"
               class="tag mr-2"

@@ -24,14 +24,17 @@ export const formatDate = {
   },
 };
 
-export const timeGreeting = {
+export const greeting = {
   computed: {
-    timeGreeting() {
+    greeting() {
       let hour = new Date().getHours();
+      let time;
 
-      if (hour >= 0 && hour <= 11) return 'Bom dia';
-      if (hour >= 12 && hour <= 17) return 'Boa tarde';
-      if (hour >= 18 && hour <= 23) return 'Boa noite';
+      if (hour >= 0 && hour <= 11) time = 'Bom dia';
+      if (hour >= 12 && hour <= 17) time = 'Boa tarde';
+      if (hour >= 18 && hour <= 23) time = 'Boa noite';
+
+      return time + ', ' + this.place.name + '!';
     },
   },
 };
